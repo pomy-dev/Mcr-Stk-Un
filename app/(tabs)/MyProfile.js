@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
-import { StyleSheet, ScrollView, View, Text, TouchableOpacity, Alert, TextInput } from 'react-native';
+import { Alert, Image, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Icons } from '../../constants/Icons';
-import { AppContext } from '../../context/appContext';
+import { Images } from '../../constants/Images';
 import { AuthContext } from '../../context/authProvider';
+import { useAppContext } from '../_layout';
 
 // Mock user data
 const mockUser = {
   id: '1',
-  name: 'Thabo Mthembu',
-  email: 'thabo.mthembu@email.com',
+  name: 'Jane Sibiza',
+  email: 'sibiza.jane@email.com',
   phone: '+268 7612 3456',
-  profilePicture: null,
+  profilePicture: Images.user || null,
   joinedGroups: 3,
   totalContributed: 15000,
   totalBorrowed: 5000,
@@ -20,6 +21,8 @@ const mockUser = {
 };
 
 export default function MemberProfile() {
+  const { theme, isDarkMode } = useAppContext();
+  const { user, logout } = React.useContext(AuthContext);
   const [isEditing, setIsEditing] = useState(false);
   const [userData, setUserData] = useState(mockUser);
   const [tempData, setTempData] = useState(mockUser);
@@ -60,41 +63,32 @@ export default function MemberProfile() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text type="title" style={styles.headerTitle}>
-          Profile
-        </Text>
-        <Text style={styles.headerSubtitle}>
-          Manage your account settings
-        </Text>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} backgroundColor={theme.colors.background} />
+      {/* Profile Picture Section */}
+      <View style={styles.profilePictureSection}>
+        <View style={styles.profilePictureContainer}>
+          {userData.profilePicture === null ? (
+            <View style={styles.profilePicturePlaceholder}>
+              <Icons.Ionicons name="person-outline" size={60} color="#666" />
+            </View>
+          ) : (
+            <View style={styles.profilePicture}>
+              <Image source={userData.profilePicture} style={styles.image} />
+            </View>
+          )}
+          <TouchableOpacity style={styles.changePictureButton}>
+            <Icons.Ionicons name='camera-reverse-outline' size={16} color="#fff" />
+          </TouchableOpacity>
+        </View>
+        <Text style={styles.userName}>{userData.name}</Text>
+        <Text style={styles.userEmail}>{userData.email}</Text>
       </View>
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        {/* Profile Picture Section */}
-        <View style={styles.profilePictureSection}>
-          <View style={styles.profilePictureContainer}>
-            {userData.profilePicture ? (
-              <View style={styles.profilePicture}>
-                {/* Profile picture would be displayed here */}
-                <Icons.Ionicons name="person-circle-outline" size={60} color="#fff" />
-              </View>
-            ) : (
-              <View style={styles.profilePicturePlaceholder}>
-                <Icons.Ionicons name="person-outline" size={60} color="#666" />
-              </View>
-            )}
-            <TouchableOpacity style={styles.changePictureButton}>
-              <Icons.AntDesign name='camerao' size={16} color="#fff" />
-            </TouchableOpacity>
-          </View>
-          <Text style={styles.userName}>{userData.name}</Text>
-          <Text style={styles.userEmail}>{userData.email}</Text>
-        </View>
-
         {/* Stats Cards */}
         <View style={styles.statsContainer}>
-          <View style={styles.statCard}>
+          <View style={[styles.statCard, { backgroundColor: theme.colors.card }]}>
             <Icons.Ionicons name="person-circle-outline" size={24} color="#4CAF50" />
             <View style={styles.statContent}>
               <Text style={styles.statValue}>{userData.joinedGroups}</Text>
@@ -102,7 +96,7 @@ export default function MemberProfile() {
             </View>
           </View>
 
-          <View style={styles.statCard}>
+          <View style={[styles.statCard, { backgroundColor: theme.colors.card }]}>
             <Icons.MaterialIcons name="money" size={24} color="#2196F3" />
             <View style={styles.statContent}>
               <Text style={styles.statValue}>E{userData.totalContributed}</Text>
@@ -110,8 +104,8 @@ export default function MemberProfile() {
             </View>
           </View>
 
-          <View style={styles.statCard}>
-            <Icons.Entypo name="star-outline" size={24} color="#FF9800" />
+          <View style={[styles.statCard, { backgroundColor: theme.colors.card }]}>
+            <Icons.Feather name="star" size={24} color="#FF9800" />
             <View style={styles.statContent}>
               <Text style={styles.statValue}>{userData.creditScore}</Text>
               <Text style={styles.statLabel}>Credit Score</Text>
@@ -269,14 +263,10 @@ export default function MemberProfile() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
   },
   header: {
-    padding: 20,
-    paddingTop: 60,
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    paddingHorizontal: 20,
+    paddingTop: 30,
   },
   headerTitle: {
     fontSize: 28,
@@ -289,14 +279,18 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
-    padding: 16,
+    paddingVertical: 16,
+    paddingHorizontal: 10,
   },
   profilePictureSection: {
     alignItems: 'center',
     backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 20,
-    marginBottom: 16,
+    borderBottomLeftRadius: 40,
+    borderBottomRightRadius: 40,
+    paddingHorizontal: 10,
+    paddingTop: 60,
+    paddingBottom: 20,
+    // marginBottom: 16,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -311,12 +305,16 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   profilePicture: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: '#4CAF50',
+    width: 80,
+    height: 80,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  image: {
+    height: '100%',
+    width: '100%',
+    borderRadius: 50,
+    objectFit: 'cover'
   },
   profilePicturePlaceholder: {
     width: 100,
@@ -355,10 +353,10 @@ const styles = StyleSheet.create({
   statCard: {
     flex: 1,
     flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
+    alignItems: 'flex-start',
     borderRadius: 8,
-    padding: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -385,7 +383,8 @@ const styles = StyleSheet.create({
   infoContainer: {
     backgroundColor: '#fff',
     borderRadius: 12,
-    padding: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 10,
     marginBottom: 16,
     shadowColor: '#000',
     shadowOffset: {
@@ -489,7 +488,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#f44336',
     padding: 16,
     borderRadius: 8,
-    marginTop: 20,
+    marginTop: 10,
+    marginBottom: 20,
   },
   logoutButtonText: {
     color: '#fff',

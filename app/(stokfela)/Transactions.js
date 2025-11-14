@@ -1,8 +1,16 @@
+import { router } from 'expo-router';
 import React, { useState } from 'react';
-import { StyleSheet, ScrollView, View, Text, TouchableOpacity, Alert } from 'react-native';
+import {
+  Alert,
+  Image,
+  Pressable,
+  ScrollView, StatusBar, StyleSheet,
+  Text, TouchableOpacity, View
+} from 'react-native';
 import { Icons } from '../../constants/Icons';
-import { AppContext } from '../../context/appContext';
+import { Images } from '../../constants/Images';
 import { AuthContext } from '../../context/authProvider';
+import { useAppContext } from '../_layout';
 
 // Mock data for transactions
 const mockTransactions = [
@@ -60,8 +68,15 @@ const mockTransactions = [
   },
 ];
 
+const mockUser = {
+  name: "Jane Sibiza",
+  avatar: Images.user,
+};
+
 export default function TransactionsScreen() {
-  const [selectedFilter, setSelectedFilter] = useState < 'all' | 'contributions' | 'loans' | 'repayments' > ('all');
+  const { theme, isDarkMode } = useAppContext();
+  const { user, logout } = React.useContext(AuthContext);
+  const [selectedFilter, setSelectedFilter] = useState('all');
 
   const filteredTransactions = mockTransactions.filter(transaction => {
     if (selectedFilter === 'all') return true;
@@ -80,8 +95,8 @@ export default function TransactionsScreen() {
         );
       case 'loan':
         return (
-          <Icons.Entypo
-            name='hand'
+          <Icons.FontAwesome6
+            name='hand-holding-dollar'
             size={20}
             color="#fff"
           />
@@ -156,23 +171,25 @@ export default function TransactionsScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} backgroundColor={theme.colors.background} />
+
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { backgroundColor: theme.colors.background }]}>
         <View style={styles.headerContent}>
-          <Text type="title" style={styles.headerTitle}>
-            Transactions
-          </Text>
-          <Text style={styles.headerSubtitle}>
-            Track all group activities
-          </Text>
+          <TouchableOpacity onPress={() => router.back()}>
+            <Icons.Ionicons name='arrow-back' size={24} color={theme.colors.text} />
+          </TouchableOpacity>
+          <Pressable onPress={() => router.push('./(tabs)/MyProfile')} style={styles.backButton}>
+            <Image source={mockUser.avatar} style={styles.userAvatar} />
+          </Pressable>
         </View>
         <View style={styles.headerActions}>
           <TouchableOpacity style={styles.searchButton}>
-            <Icons.Entypo name="magnifying-glass" size={20} color="#666" />
+            <Icons.Entypo name="magnifying-glass" size={24} color="#666" />
           </TouchableOpacity>
           <TouchableOpacity style={styles.filterButton}>
-            <Icons.FontAwesome name="sliders" size={20} color="#666" />
+            <Icons.FontAwesome name="sliders" size={24} color="#666" />
           </TouchableOpacity>
         </View>
       </View>
@@ -181,10 +198,10 @@ export default function TransactionsScreen() {
       <View style={styles.filterContainer}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           {[
-            { key: 'all', label: 'All', icon: 'list', icon_parent: 'Feather' },
-            { key: 'contributions', label: 'Contributions', icon: 'plus', icon_parent: 'Feather' },
-            { key: 'loans', label: 'Loans', icon: 'hand', icon_parent: 'Entypo' },
-            { key: 'repayments', label: 'Repayments', icon: 'check-circle', icon_parent: 'Feather' },
+            { key: 'all', label: 'All', icon: 'list' },
+            { key: 'contribution', label: 'Contributions', icon: 'plus' },
+            { key: 'loan', label: 'Loans', icon: 'hand-holding-dollar' },
+            { key: 'repayment', label: 'Repayments', icon: 'check-circle' },
           ].map((filter) => (
             <TouchableOpacity
               key={filter.key}
@@ -194,9 +211,9 @@ export default function TransactionsScreen() {
               ]}
               onPress={() => setSelectedFilter(filter.key)}
             >
-              {filter.key === 'loans'
+              {filter.key === 'loan'
                 ?
-                <Icons.Entypo
+                <Icons.FontAwesome6
                   name={filter.icon}
                   size={16}
                   color={selectedFilter === filter.key ? '#fff' : '#6c757d'}
@@ -223,7 +240,7 @@ export default function TransactionsScreen() {
 
       {/* Summary Cards */}
       <View style={styles.summaryContainer}>
-        <View style={styles.summaryCard}>
+        <View style={[styles.summaryCard, { backgroundColor: theme.colors.card }]}>
           <View style={styles.summaryIconContainer}>
             <Icons.Feather name="plus" size={20} color="#fff" />
           </View>
@@ -233,9 +250,9 @@ export default function TransactionsScreen() {
           </View>
         </View>
 
-        <View style={styles.summaryCard}>
+        <View style={[styles.summaryCard, { backgroundColor: theme.colors.card }]}>
           <View style={[styles.summaryIconContainer, { backgroundColor: '#FF9800' }]}>
-            <Icons.Entypo name="hand" size={20} color="#fff" />
+            <Icons.FontAwesome6 name="hand-holding-dollar" size={20} color="#fff" />
           </View>
           <View style={styles.summaryContent}>
             <Text style={styles.summaryValue}>E7,000</Text>
@@ -243,7 +260,7 @@ export default function TransactionsScreen() {
           </View>
         </View>
 
-        <View style={styles.summaryCard}>
+        <View style={[styles.summaryCard, { backgroundColor: theme.colors.card }]}>
           <View style={[styles.summaryIconContainer, { backgroundColor: '#2196F3' }]}>
             <Icons.Feather name="check-circle" size={20} color="#fff" />
           </View>
@@ -260,7 +277,7 @@ export default function TransactionsScreen() {
           <TouchableOpacity
             key={transaction.id}
             style={[
-              styles.transactionCard,
+              styles.transactionCard, { backgroundColor: theme.colors.card }
             ]}
             onPress={() => handleTransactionPress(transaction)}
           >
@@ -336,23 +353,23 @@ export default function TransactionsScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#f8f9fa',
+    flex: 1
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingTop: 60,
-    paddingBottom: 20,
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e9ecef',
+    paddingTop: 30
   },
   headerContent: {
     flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 20
   },
+  backButton: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 8 },
+  userAvatar: { width: 36, height: 36, borderRadius: 18, borderWidth: 1, borderColor: "#cbd5e1" },
   headerTitle: {
     fontSize: 24,
     fontWeight: '700',
@@ -385,11 +402,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   filterContainer: {
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e9ecef',
+    paddingHorizontal: 10,
+    paddingVertical: 10,
   },
   filterTab: {
     flexDirection: 'row',
@@ -398,7 +412,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 20,
     marginRight: 8,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: '#F8F4FF',
     gap: 6,
   },
   filterTabActive: {
@@ -414,17 +428,16 @@ const styles = StyleSheet.create({
   },
   summaryContainer: {
     flexDirection: 'row',
-    paddingHorizontal: 20,
+    paddingHorizontal: 10,
     paddingVertical: 16,
-    gap: 12,
+    gap: 6,
   },
   summaryCard: {
     flex: 1,
-    flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
     borderRadius: 12,
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
@@ -437,11 +450,10 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     backgroundColor: '#4CAF50',
     alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
+    justifyContent: 'center'
   },
   summaryContent: {
-    flex: 1,
+    alignItems: 'center'
   },
   summaryValue: {
     fontSize: 16,
@@ -453,14 +465,14 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#6c757d',
     fontWeight: '500',
+    textAlign: 'center'
   },
   transactionsList: {
     flex: 1,
-    paddingHorizontal: 20,
+    paddingVertical: 10,
+    marginBottom: 40
   },
   transactionCard: {
-    backgroundColor: '#fff',
-    borderRadius: 16,
     padding: 16,
     marginBottom: 12,
     shadowColor: '#000',

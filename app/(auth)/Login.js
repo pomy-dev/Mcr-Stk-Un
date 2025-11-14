@@ -1,3 +1,4 @@
+import { router } from "expo-router";
 import React, { useState } from 'react';
 import {
   Alert,
@@ -11,7 +12,7 @@ import {
 import { Button } from '../../components/ui/Button';
 import { AuthContext } from '../../context/authProvider';
 
-export default function LoginScreen({ navigation }) {
+export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -26,7 +27,7 @@ export default function LoginScreen({ navigation }) {
     try {
       setLoading(true);
       // await signIn(email, password);
-      navigation.navigate('Groups');
+      router.push('Groups');
     } catch (error) {
       Alert.alert('Login Failed', error.message || 'Invalid credentials');
     } finally {
@@ -81,7 +82,7 @@ export default function LoginScreen({ navigation }) {
       </View>
 
       <TouchableOpacity
-        onPress={() => navigation.navigate('Signup')}
+        onPress={() => router.push('Signup')}
         style={styles.signupLink}
       >
         <Text style={styles.signupText}>

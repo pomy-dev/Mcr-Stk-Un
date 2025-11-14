@@ -1,11 +1,13 @@
+
+import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Avatar } from 'react-native-paper';
 import { MoreDropdown } from '../../components/ui/moreDropDown';
 import { Icons } from '../../constants/Icons';
 import { Images } from '../../constants/Images';
-import { AppContext } from '../../context/appContext';
 import { AuthContext } from '../../context/authProvider';
+import { useAppContext } from '../_layout';
 
 // Mock data for group details
 const mockGroupDetails = {
@@ -80,8 +82,8 @@ const mockGroupDetails = {
   ],
 };
 
-export default function GroupDetailsScreen({ navigation }) {
-  const { theme, isDarkMode } = React.useContext(AppContext)
+export default function GroupDetailsScreen() {
+  const { theme, isDarkMode } = useAppContext();
   const { user } = React.useContext(AuthContext)
   const [activeTab, setActiveTab] = useState('overview');
 
@@ -115,6 +117,18 @@ export default function GroupDetailsScreen({ navigation }) {
       'Member invitation functionality would be implemented here.',
       [{ text: 'OK' }]
     );
+  };
+
+  const handleRequestLoan = () => {
+    router.push('/LoanDetails?mode=request');
+  };
+
+  const handleManageLoan = () => {
+    router.push('/LoanDetails?mode=repay&loadId=2');
+  };
+
+  const handleSubscribe = () => {
+    router.push('/Contributions');
   };
 
   const renderOverview = () => (
@@ -202,28 +216,27 @@ export default function GroupDetailsScreen({ navigation }) {
           <Text style={styles.infoValue}>Yes/No</Text>
         </View>
 
-        <View style={[styles.cardDescription, { backgroundColor: theme.colors.sub_card }]}>
-          <Text style={[{ textAlign: 'center', color: theme.colors.text, fontSize: 20 }]}>Description</Text>
+        <View style={[styles.cardDescription, { backgroundColor: theme?.colors.sub_card }]}>
+          <Text style={[{ textAlign: 'center', color: theme?.colors.text, fontSize: 20 }]}>Description</Text>
           <Text style={styles.infoDescription}>{mockGroupDetails.description}</Text>
         </View>
-
       </View>
 
       {/* Action Buttons */}
       <View style={styles.actionButtons}>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
-          <TouchableOpacity style={[styles.actionButton, { backgroundColor: '#ce701dff' }]} onPress={() => navigation.navigate('MakeLoan', { mode: 'request' })}>
-            <Icons.Entypo name="hand" size={20} color="#fff" />
+          <TouchableOpacity style={[styles.actionButton, { backgroundColor: '#ce701dff' }]} onPress={handleRequestLoan}>
+            <Icons.FontAwesome6 name="hand-holding-dollar" size={20} color="#fff" />
             <Text style={styles.actionButtonText}>Request Loan</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={[styles.actionButton, { backgroundColor: '#954cafff' }]} onPress={() => navigation.navigate('MakeLoan', { mode: 'repay', loadId: 2 })}>
+          <TouchableOpacity style={[styles.actionButton, { backgroundColor: '#954cafff' }]} onPress={handleManageLoan}>
             <Icons.MaterialCommunityIcons name="cash-refund" size={24} color="#fff" />
             <Text style={styles.actionButtonText}>Manage Loan</Text>
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity style={styles.actionButtonSecondary} onPress={() => navigation.navigate('PaySubscription')}>
+        <TouchableOpacity style={styles.actionButtonSecondary} onPress={handleSubscribe}>
           <Icons.Feather name="plus" size={20} color="#4CAF50" />
           <Text style={styles.actionButtonTextSecondary}>Make Subscription</Text>
         </TouchableOpacity>
@@ -306,17 +319,21 @@ export default function GroupDetailsScreen({ navigation }) {
     </View>
   );
 
+  const handleTransactions = () => {
+    router.push('/Transactions')
+  }
+
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} backgroundColor={theme.colors.background} />
+    <View style={[styles.container, { backgroundColor: theme?.colors.background }]}>
+      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} backgroundColor={theme?.colors.background} />
 
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity onPress={() => router.back()}>
           <Icons.Ionicons name='arrow-back' size={24} color='#0000' />
         </TouchableOpacity>
 
         <View style={{ flexDirection: 'row', gap: '10', alignItems: 'center' }}>
-          <Avatar.Image source={Images.stokfela} width={40} size={40} />
+          <Avatar.Image source={Images.stokfelalogo} width={40} size={40} />
           <Text type="title" style={styles.headerTitle}>
             {mockGroupDetails.name}
           </Text>
@@ -347,6 +364,12 @@ export default function GroupDetailsScreen({ navigation }) {
               icon: 'AntDesign',
               iconName: 'user-add',
               onPress: () => console.log('Add user')
+            },
+            {
+              title: 'Transactions',
+              icon: 'FontAwesome',
+              iconName: 'list-alt',
+              onPress: () => handleTransactions(),
             },
             {
               title: 'Leave Group',

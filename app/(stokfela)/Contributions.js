@@ -1,26 +1,28 @@
-import React, { useState, useContext, useCallback, useMemo } from 'react';
-import {
-  StyleSheet,
-  StatusBar,
-  ScrollView,
-  Image,
-  View,
-  Text,
-  TouchableOpacity,
-  Alert,
-  TextInput,
-  FlatList,
-  Modal,
-  ActivityIndicator
-} from 'react-native';
+import BottomSheet, { useBottomSheetSpringConfigs } from '@gorhom/bottom-sheet';
 import * as ImagePicker from 'expo-image-picker';
-import { Menu, Portal } from 'react-native-paper';
+import { router } from 'expo-router';
+import React, { useCallback, useMemo, useState } from 'react';
+import {
+  ActivityIndicator,
+  Alert,
+  FlatList,
+  Image,
+  Modal,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
+} from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Portal } from 'react-native-paper';
+import { MoreDropdown } from '../../components/ui/moreDropDown';
 import { Icons } from '../../constants/Icons';
 import { Images } from '../../constants/Images';
-import { AppContext } from '../../context/appContext';
 import { AuthContext } from '../../context/authProvider';
-import BottomSheet, { useBottomSheetSpringConfigs, BottomSheetScrollView } from '@gorhom/bottom-sheet';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useAppContext } from '../_layout';
 
 const MOCK_TRANSACTIONS = [
   { id: '1', date: '2025-10-28', amount: 'E500.00', status: 'Success', reference: 'XMAS2024-001' },
@@ -36,16 +38,14 @@ const PAYMENT_METHODS = [
   { id: 'cash', name: 'Cash', image: Images.cash || Images.cash, account: 'Treasurer' },
 ];
 
-export default function MakeContributionScreen({ navigation }) {
-  const { theme, isDarkMode } = useContext(AppContext);
-  const { user } = useContext(AuthContext);
+export default function MakeContributionScreen() {
+  const { theme, isDarkMode } = useAppContext();
+  const { user, logout } = React.useContext(AuthContext);
 
   const [contributionAmount, setContributionAmount] = useState('');
   const [reference, setReference] = useState('');
   const [attchment, setAttachment] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState(PAYMENT_METHODS[0]);
-
-  const [moreVisible, setMoreVisible] = useState(false);
   const [methodModalVisible, setMethodModalVisible] = useState(false);
   const [accordionOpen, setAccordionOpen] = useState(false);
 
@@ -64,9 +64,6 @@ export default function MakeContributionScreen({ navigation }) {
   });
 
   const [isPickImg, setIsPickImg] = useState(false);
-
-  const openMoreMenu = () => setMoreVisible(true);
-  const closeMoreMenu = () => setMoreVisible(false);
 
   const openBottomSheet = useCallback(() => {
     setSheetAmount(contributionAmount);
@@ -128,9 +125,9 @@ export default function MakeContributionScreen({ navigation }) {
   };
 
   const renderTransaction = ({ item }) => (
-    <View style={[styles.transactionItem, { backgroundColor: theme.colors.card }]}>
+    <View style={[styles.transactionItem, { backgroundColor: theme?.colors.card }]}>
       <View>
-        <Text style={{ fontWeight: '600', color: theme.colors.text }}>{item.amount}</Text>
+        <Text style={{ fontWeight: '600', color: theme?.colors.text }}>{item.amount}</Text>
         <Text style={{ fontSize: 12, color: '#666' }}>{item.reference}</Text>
       </View>
       <View style={{ alignItems: 'flex-end' }}>
@@ -146,6 +143,10 @@ export default function MakeContributionScreen({ navigation }) {
     </View>
   );
 
+  const handleMyProfile = () => {
+    router.push('/MyProfile')
+  }
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
@@ -153,62 +154,71 @@ export default function MakeContributionScreen({ navigation }) {
 
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Icons.Ionicons name='arrow-back' size={24} color={theme.colors.text} />
+          <TouchableOpacity onPress={() => router.back()}>
+            <Icons.Ionicons name='arrow-back' size={24} color={theme?.colors.text} />
           </TouchableOpacity>
           <Text style={styles.groupName}>Christmas Savings 2024</Text>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 20 }}>
-            <TouchableOpacity>
-              <Icons.Ionicons name="notifications-outline" size={24} color={theme.colors.text} />
-            </TouchableOpacity>
 
-            <Menu
-              visible={moreVisible}
-              onDismiss={closeMoreMenu}
-              anchor={
-                <TouchableOpacity onPress={openMoreMenu}>
-                  <Icons.Entypo name='dots-three-vertical' size={24} color={theme.colors.text} />
-                </TouchableOpacity>
-              }
-            >
-              <Menu.Item title="Group Account" />
-              <Menu.Item title="Repay Loans" />
-              <Menu.Item title="Admin Outline" />
-              <Menu.Item title="Leave Group" />
-            </Menu>
-          </View>
+          <MoreDropdown
+            items={[
+              {
+                title: 'My Profile',
+                icon: 'Ionicons',
+                iconName: 'person',
+                onPress: () => handleMyProfile(),
+              },
+              {
+                title: 'Leave Group',
+                icon: 'AntDesign',
+                iconName: 'logout',
+                onPress: () =>
+                  Alert.alert(
+                    'Leave Group',
+                    'Are you sure you want to leave this group?',
+                    [
+                      { text: 'Cancel', style: 'cancel' },
+                      {
+                        text: 'Sign Out',
+                        onPress: () => logout(),
+                        style: 'destructive'
+                      },
+                    ]
+                  ),
+              },
+            ]}
+          />
         </View>
 
         <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
           {/* Group Info */}
-          <View style={[styles.groupInfoCard, { backgroundColor: theme.colors.card }]}>
+          <View style={[styles.groupInfoCard, { backgroundColor: theme?.colors.card }]}>
             <View style={styles.groupInfoContent}>
               <Text style={styles.groupDetails}>Current Balance</Text>
-              <Text style={{ fontSize: 24, color: theme.colors.error, textAlign: 'center' }}>E1,750.00</Text>
+              <Text style={{ fontSize: 24, color: theme?.colors.error, textAlign: 'center' }}>E1,750.00</Text>
               <Text style={styles.groupDetails}>Standard Contribution: E500</Text>
-              <View style={{ borderRadius: 20, backgroundColor: theme.colors.sub_card, paddingHorizontal: 10, paddingVertical: 5, marginTop: 10 }}>
+              <View style={{ borderRadius: 20, backgroundColor: theme?.colors.sub_card, paddingHorizontal: 10, paddingVertical: 5, marginTop: 10 }}>
                 <Text style={styles.groupDetails}>Next Due: 2025-07-15</Text>
               </View>
             </View>
-            <View style={[styles.quickActionContainer, { backgroundColor: theme.colors.sub_card }]}>
+            <View style={[styles.quickActionContainer, { backgroundColor: theme?.colors.sub_card }]}>
 
               <TouchableOpacity style={{ alignItems: 'center' }}>
-                <Icons.EvilIcons name='plus' size={20} color={theme.colors.text} />
+                <Icons.EvilIcons name='plus' size={20} color={theme?.colors.text} />
                 <Text style={styles.groupDetails}>Top Up</Text>
               </TouchableOpacity>
 
               <TouchableOpacity style={{ alignItems: 'center' }}>
-                <Icons.MaterialCommunityIcons name='transfer-up' size={15} color={theme.colors.text} />
+                <Icons.MaterialCommunityIcons name='transfer-up' size={15} color={theme?.colors.text} />
                 <Text style={styles.groupDetails}>Transfer</Text>
               </TouchableOpacity>
 
               <TouchableOpacity style={{ alignItems: 'center' }}>
-                <Icons.FontAwesome5 name='layer-group' size={15} color={theme.colors.text} />
+                <Icons.FontAwesome5 name='layer-group' size={15} color={theme?.colors.text} />
                 <Text style={styles.groupDetails}>Bills</Text>
               </TouchableOpacity>
 
               <TouchableOpacity style={{ alignItems: 'center' }}>
-                <Icons.MaterialIcons name='dashboard-customize' size={15} color={theme.colors.text} />
+                <Icons.MaterialIcons name='dashboard-customize' size={15} color={theme?.colors.text} />
                 <Text style={styles.groupDetails}>Other</Text>
               </TouchableOpacity>
             </View>
@@ -220,12 +230,12 @@ export default function MakeContributionScreen({ navigation }) {
             <Text style={styles.inputLabel}>Payment Method</Text>
             <View style={styles.paymentMethodSelector}>
               <TouchableOpacity
-                style={[styles.paymentMethodOption, { backgroundColor: theme.colors.card, borderColor: theme.colors.border }]}
+                style={[styles.paymentMethodOption, { backgroundColor: theme?.colors.card, borderColor: theme?.colors.border }]}
                 onPress={openBottomSheet}
               >
                 <Image source={paymentMethod.image} style={{ height: 50, width: 50 }} />
                 <View style={{ marginLeft: 8 }}>
-                  <Text style={[styles.paymentMethodText, { color: theme.colors.text }]}>{paymentMethod.name}</Text>
+                  <Text style={[styles.paymentMethodText, { color: theme?.colors.text }]}>{paymentMethod.name}</Text>
                   <Text style={{ fontSize: 11, color: '#666' }}>{paymentMethod.account}</Text>
                 </View>
               </TouchableOpacity>
@@ -268,11 +278,11 @@ export default function MakeContributionScreen({ navigation }) {
                 <Icons.Ionicons
                   name={accordionOpen ? 'chevron-up' : 'chevron-down'}
                   size={20}
-                  color={theme.colors.text}
+                  color={theme?.colors.text}
                 />
               </TouchableOpacity>
               {accordionOpen && (
-                <View style={[styles.accordionContent, { backgroundColor: theme.colors.card }]}>
+                <View style={[styles.accordionContent, { backgroundColor: theme?.colors.card }]}>
                   {paymentMethod.id === 'momo' && (
                     <>
                       <Text style={styles.instructionStep}>1. Open MoMo app</Text>
@@ -302,14 +312,14 @@ export default function MakeContributionScreen({ navigation }) {
             </View>
 
             {attchment !== null && (
-              <View style={[styles.attachmentContainer, { backgroundColor: theme.colors.sub_card }]}>
+              <View style={[styles.attachmentContainer, { backgroundColor: theme?.colors.sub_card }]}>
                 <Image source={{ uri: attchment.uri }} style={styles.attachment} />
                 <View>
                   <Text style={styles.groupDetails}>Size: {attchment.fileSize}</Text>
                   <Text style={styles.groupDetails}>File Type: {attchment.type}</Text>
                 </View>
                 <TouchableOpacity style={styles.removeAttachment} onPress={() => setAttachment(null)}>
-                  <Icons.FontAwesome name='remove' size={20} color={theme.colors.error} />
+                  <Icons.FontAwesome name='remove' size={20} color={theme?.colors.error} />
                 </TouchableOpacity>
               </View>
             )}
@@ -335,8 +345,8 @@ export default function MakeContributionScreen({ navigation }) {
           animateOnMount={true}
           enableHandlePanningGesture={true}
           enableDynamicSizing={false}
-          containerStyle={{ borderColor: theme.colors.border }}
-          backgroundStyle={{ backgroundColor: theme.colors.sub_card }}
+          containerStyle={{ borderColor: theme?.colors.border }}
+          backgroundStyle={{ backgroundColor: theme?.colors.sub_card }}
         >
           <View style={styles.bottomSheetContent}>
             <Text style={styles.bottomSheetTitle}>Pay with {paymentMethod.name}</Text>
@@ -344,7 +354,7 @@ export default function MakeContributionScreen({ navigation }) {
             <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>Amount</Text>
               <TextInput
-                style={[styles.textInput, { backgroundColor: theme.colors.background, color: theme.colors.text }]}
+                style={[styles.textInput, { backgroundColor: theme?.colors.background, color: theme?.colors.text }]}
                 placeholder="E500.00"
                 value={sheetAmount}
                 onChangeText={setSheetAmount}
@@ -355,7 +365,7 @@ export default function MakeContributionScreen({ navigation }) {
             <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>Reference</Text>
               <TextInput
-                style={[styles.textInput, { backgroundColor: theme.colors.background, color: theme.colors.text }]}
+                style={[styles.textInput, { backgroundColor: theme?.colors.background, color: theme?.colors.text }]}
                 placeholder="XMAS2024-XXX"
                 value={sheetReference}
                 onChangeText={setSheetReference}
@@ -365,7 +375,7 @@ export default function MakeContributionScreen({ navigation }) {
             <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>PIN - {paymentMethod.name}</Text>
               <TextInput
-                style={[styles.textInput, { backgroundColor: theme.colors.background, color: theme.colors.text }]}
+                style={[styles.textInput, { backgroundColor: theme?.colors.background, color: theme?.colors.text }]}
                 placeholder="••••"
                 value={sheetPin}
                 onChangeText={setSheetPin}
@@ -390,7 +400,7 @@ export default function MakeContributionScreen({ navigation }) {
             onRequestClose={() => setMethodModalVisible(false)}
           >
             <View style={styles.modalOverlay}>
-              <View style={[styles.modalContent, { backgroundColor: theme.colors.card }]}>
+              <View style={[styles.modalContent, { backgroundColor: theme?.colors.card }]}>
                 <Text style={styles.modalTitle}>Choose Payment Method</Text>
                 {PAYMENT_METHODS.map(method => (
                   <TouchableOpacity
@@ -403,7 +413,7 @@ export default function MakeContributionScreen({ navigation }) {
                   >
                     <Image source={method.image} style={{ width: 40, height: 40 }} />
                     <View style={{ marginLeft: 12, flex: 1 }}>
-                      <Text style={{ fontWeight: '600', color: theme.colors.text }}>{method.name}</Text>
+                      <Text style={{ fontWeight: '600', color: theme?.colors.text }}>{method.name}</Text>
                       <Text style={{ fontSize: 12, color: '#666' }}>{method.account}</Text>
                     </View>
                     {paymentMethod.id === method.id && (

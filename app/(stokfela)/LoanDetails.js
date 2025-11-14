@@ -1,24 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import Slider from '@react-native-community/slider';
+import { router, useLocalSearchParams } from 'expo-router';
+import React, { useEffect, useState } from 'react';
 import {
+  Alert,
+  ScrollView,
   StatusBar,
   StyleSheet,
-  ScrollView,
-  View,
   Text,
+  TextInput,
   TouchableOpacity,
-  Alert,
-  TextInput
+  View
 } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
-import Slider from '@react-native-community/slider';
 import { Icons } from '../../constants/Icons';
-import { AppContext } from '../../context/appContext';
 import { AuthContext } from '../../context/authProvider';
+import { useAppContext } from '../_layout';
 
-export default function LoanRequestScreen({ navigation, route }) {
-  const { theme, isDarkMode } = React.useContext(AppContext);
+export default function LoanRequestScreen() {
+  const { theme, isDarkMode } = useAppContext();
   // Detect mode
-  const { mode, loanId } = route.params;
+  const { mode, loanId } = useLocalSearchParams();
   const { user } = React.useContext(AuthContext);
 
   // === REQUEST MODE STATES ===
@@ -39,6 +40,7 @@ export default function LoanRequestScreen({ navigation, route }) {
       setRepayAmount(0);
     }
   }, [mode]);
+  console.log(mode)
 
   const handleSubmitLoan = () => {
     if (mode === 'request') {
@@ -76,7 +78,7 @@ export default function LoanRequestScreen({ navigation, route }) {
             text: 'Confirm',
             onPress: () => {
               Alert.alert('Success', 'Repayment recorded!');
-              navigation.goBack();
+              router.back();
             },
           },
         ]
@@ -131,12 +133,12 @@ export default function LoanRequestScreen({ navigation, route }) {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} backgroundColor={theme.colors.background} />
+    <View style={[styles.container, { backgroundColor: theme?.colors.background }]}>
+      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} backgroundColor={theme?.colors.background} />
 
       <View style={[styles.header, { backgroundColor: mode === 'request' ? '#ce701dff' : '#954cafff' }]}>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
+          <TouchableOpacity onPress={() => router.back()}>
             <Icons.Ionicons name='arrow-back' size={24} color='#fff' />
           </TouchableOpacity>
           <Text style={[styles.headerTitle, { color: '#fff' }]}>
@@ -210,7 +212,7 @@ export default function LoanRequestScreen({ navigation, route }) {
                   setRepaymentPeriod(item.repaymentPeriod)
                 }}
                 renderLeftIcon={() => (
-                  <Icons.MaterialCommunityIcons style={styles.icon} color={theme.colors.text} name="cash-refund" size={20} />
+                  <Icons.MaterialCommunityIcons style={styles.icon} color={theme?.colors.text} name="cash-refund" size={20} />
                 )}
                 renderItem={renderItem}
               />
@@ -341,8 +343,8 @@ const styles = StyleSheet.create({
   header: {
     padding: 20,
     paddingTop: 40,
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
     elevation: 4,
   },
   headerTitle: { fontSize: 20, fontWeight: 'bold', color: '#fff' },

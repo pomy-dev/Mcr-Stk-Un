@@ -1,6 +1,7 @@
 "use client";
 
 import { LinearGradient } from "expo-linear-gradient";
+import { router } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
   Alert,
@@ -17,29 +18,71 @@ import {
 import Animated, { FadeInDown } from "react-native-reanimated";
 import Carousel from "react-native-reanimated-carousel";
 import { Icons } from '../../constants/Icons';
+import { Images } from '../../constants/Images';
 
 const { width: WINDOW_WIDTH } = Dimensions.get("window");
 
 const mockUser = {
-  name: "Alex Kimani",
-  avatar: "https://i.pravatar.cc/150?img=12",
+  name: "Jane Sibiza",
+  avatar: Images.user,
 };
 
 const groups = [
-  { id: "g1", name: "Farmers Union", logo: "https://i.pravatar.cc/80?img=1", bg: "https://i.pravatar.cc/300?img=31", latestUpdate: "Annual meeting on 20 Nov" },
-  { id: "g2", name: "Youth Council", logo: "https://i.pravatar.cc/80?img=2", bg: "https://i.pravatar.cc/300?img=32", latestUpdate: "Volunteer drive this Saturday" },
-  { id: "g3", name: "Artisans Guild", logo: "https://i.pravatar.cc/80?img=3", bg: "https://i.pravatar.cc/300?img=33", latestUpdate: "Exhibition open till Sunday" },
-  { id: "g4", name: "Small Business Assoc.", logo: "https://i.pravatar.cc/80?img=4", bg: "https://i.pravatar.cc/300?img=34", latestUpdate: "Training: Digital skills" },
-  { id: "g5", name: "Mothers Circle", logo: "https://i.pravatar.cc/80?img=5", bg: "https://i.pravatar.cc/300?img=35", latestUpdate: "Health workshop next week" },
-  { id: "g6", name: "Fishermen Guild", logo: "https://i.pravatar.cc/80?img=6", bg: "https://i.pravatar.cc/300?img=36", latestUpdate: "Net distribution in port" },
+  {
+    id: "g1",
+    name: "Farmers Union",
+    logo: Images.tradeunionlogo,
+    bg: Images.tradeunionbg,
+    type: "Trade Union",
+    update: "Maize prices expected to rise next season"
+  },
+  {
+    id: "g2",
+    name: "Womens' Huddle",
+    logo: Images.stokfelalogo,
+    bg: Images.stokfelabg,
+    type: "StokFella",
+    update: "Next meeting scheduled for Saturday"
+  },
+  {
+    id: "g3",
+    name: "SNAT",
+    logo: Images.workersunionlogo,
+    bg: Images.workersunionbg,
+    type: "Workers Union",
+    update: "New health benefits for members announced"
+  },
+  {
+    id: "g4",
+    name: "Micro Lending",
+    logo: Images.micrologo,
+    bg: Images.microbg,
+    type: "Micro Loans",
+    update: "New low-interest loan options available now"
+  },
+  {
+    id: "g5",
+    name: "Mothers Circle",
+    logo: Images.micrologo,
+    bg: Images.microbg,
+    type: "Micro Loans",
+    update: "Join our upcoming workshop on financial literacy"
+  },
+  {
+    id: "g6",
+    name: "Fishermen Guild",
+    logo: Images.tradeunionlogo,
+    bg: Images.tradeunionbg,
+    type: "Trade Union",
+    update: "Safety protocols updated for the fishing season"
+  },
 ];
 
 const banners = groups.map((g) => ({
   id: g.id,
   title: g.name,
-  subtitle: g.latestUpdate,
-  logo: g.logo,
-  bg: g.bg,
+  subtitle: g.update,
+  logo: g.logo
 }));
 
 const reminderIcons = ["calendar", "brush", "people"];
@@ -95,11 +138,11 @@ export default function HomeScreen({ navigation }) {
 
   const renderBanner = ({ item }) => (
     <Pressable
-      style={[styles.bannerItem, { width: WINDOW_WIDTH - 48 }]}
+      style={[styles.bannerItem, { width: WINDOW_WIDTH - 40 }]}
       onPress={() => navigation.navigate("GroupDetailScreen", { groupId: item.id })}
     >
       <View style={styles.bannerCard}>
-        <Image source={{ uri: item.logo }} style={styles.bannerLogo} />
+        <Image source={item.logo} style={styles.bannerLogo} />
         <View style={styles.bannerContent}>
           <Text style={styles.bannerTitle} numberOfLines={1}>
             {item.title}
@@ -123,9 +166,9 @@ export default function HomeScreen({ navigation }) {
             <Pressable
               key={g.id}
               style={[styles.gridItem, { width: itemWidth }]}
-              onPress={() => navigation.navigate("GroupDetailScreen", { groupId: g.id })}
+              onPress={() => handleDetailsGroup(g.type, g.id)}
             >
-              <Image source={{ uri: g.bg }} style={styles.gridBg} />
+              <Image source={g.bg} style={styles.gridBg} />
               <LinearGradient
                 colors={["transparent", "rgba(0,0,0,0.7)"]}
                 style={StyleSheet.absoluteFill}
@@ -133,12 +176,12 @@ export default function HomeScreen({ navigation }) {
                 end={{ x: 0, y: 1 }}
               />
               <View style={styles.gridContent}>
-                <Image source={{ uri: g.logo }} style={styles.gridLogo} />
+                <Image source={g.logo} style={styles.gridLogo} />
                 <Text style={styles.gridName} numberOfLines={1}>
                   {g.name}
                 </Text>
                 <Text style={styles.gridUpdate} numberOfLines={1}>
-                  {g.latestUpdate}
+                  {g.type}
                 </Text>
               </View>
             </Pressable>
@@ -156,13 +199,13 @@ export default function HomeScreen({ navigation }) {
           <Pressable
             key={g.id}
             style={styles.listItem}
-            onPress={() => navigation.navigate("GroupDetailScreen", { groupId: g.id })}
+            onPress={() => handleDetailsGroup(g.type, g.id)}
           >
-            <Image source={{ uri: g.logo }} style={styles.listLogo} />
+            <Image source={g.logo} style={styles.listLogo} />
             <View style={styles.listText}>
               <Text style={styles.listName}>{g.name}</Text>
               <Text style={styles.listUpdate} numberOfLines={1}>
-                {g.latestUpdate}
+                {g.type}
               </Text>
             </View>
             <Icons.Ionicons name="chevron-forward" size={20} color="#94a3b8" />
@@ -172,17 +215,36 @@ export default function HomeScreen({ navigation }) {
     );
   }
 
+  const handleDetailsGroup = (groupType, groupId) => {
+    switch (groupType) {
+      case "Trade Union":
+        router.push("TradeUnionDetailScreen", { groupId });
+        break;
+      case "StokFella":
+        router.push("./(stokfela)/Dashboard", { groupId });
+        break;
+      case "Workers Union":
+        router.push("WorkersUnionDetailScreen", { groupId });
+        break;
+      case "Micro Loans":
+        router.push("MicroLoansDetailScreen", { groupId });
+        break;
+      default:
+        router.push("GroupDetailScreen", { groupId });
+    }
+  }
+
   return (
     <>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
 
       {/* App Bar */}
       <View style={styles.appBar}>
-        <Pressable onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Icons.Ionicons name="arrow-back" size={24} color="#0f172a" />
+        <Pressable onPress={() => { }} style={styles.backButton}>
+          <Image source={mockUser.avatar} style={styles.userAvatar} />
+          <Text style={styles.userName}>{mockUser.name}</Text>
         </Pressable>
         <View style={styles.appBarRight}>
-          <Image source={{ uri: mockUser.avatar }} style={styles.userAvatar} />
           <Pressable
             onPress={() =>
               Alert.alert("Logout", "Are you sure you want to log out?", [
@@ -208,7 +270,7 @@ export default function HomeScreen({ navigation }) {
         <View style={styles.carouselContainer}>
           <Carousel
             ref={carouselRef}
-            width={WINDOW_WIDTH - 48}
+            width={WINDOW_WIDTH - 40}
             height={180}
             data={banners}
             loop
@@ -300,15 +362,14 @@ const styles = StyleSheet.create({
     paddingTop: Platform.OS === "android" ? StatusBar.currentHeight + 10 : 50,
     paddingBottom: 5,
     backgroundColor: "#fff",
-    // borderBottomWidth: 1,
     borderBottomColor: "#e2e8f0",
-    // elevation: 1,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 4,
   },
-  backButton: { padding: 8 },
+  backButton: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 8 },
+  userName: { fontSize: 16, fontWeight: "600", color: "#0f172a" },
   appBarTitle: { fontSize: 18, fontWeight: "700", color: "#0f172a" },
   appBarRight: { flexDirection: "row", alignItems: "center", gap: 12 },
   userAvatar: { width: 36, height: 36, borderRadius: 18, borderWidth: 1, borderColor: "#cbd5e1" },
@@ -364,8 +425,8 @@ const styles = StyleSheet.create({
   toggleActive: { backgroundColor: "#f1f5f9" },
 
   // Grid View
-  gridContainer: { flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", marginBottom: 10, gap: 12 },
-  gridItem: { flex: 1, height: 120, borderRadius: 16, overflow: "hidden", marginBottom: 1, position: "relative" },
+  gridContainer: { flexDirection: "row", flexWrap: "wrap", justifyContent: "space-evenly", marginBottom: 20, gap: 12 },
+  gridItem: { height: 120, borderRadius: 16, overflow: "hidden", marginBottom: 1, position: "relative" },
   gridBg: { ...StyleSheet.absoluteFillObject, width: "100%", height: "100%" },
   gridContent: { ...StyleSheet.absoluteFillObject, padding: 12, justifyContent: "flex-end" },
   gridLogo: { width: 40, height: 40, borderRadius: 12, marginBottom: 8 },

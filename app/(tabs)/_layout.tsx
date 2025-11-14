@@ -1,23 +1,22 @@
+import { useAppContext } from '@/app/_layout';
+import { HapticTab } from '@/components/haptic-tab';
 import { Tabs } from 'expo-router';
 import React from 'react';
-
-import { HapticTab } from '@/components/haptic-tab';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Icons } from '../../constants/Icons';
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  const { theme } = useAppContext();
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        // @ts-ignore
+        tabBarActiveTintColor: theme.colors.indicator,
         headerShown: false,
         tabBarButton: HapticTab,
       }}>
       <Tabs.Screen
-        name="home-screen"
+        name="HomeScreen"
         options={{
           title: 'Home',
           tabBarIcon: ({ color }) => (<Icons.Ionicons name="home" size={28} color={color} />),
@@ -28,6 +27,13 @@ export default function TabLayout() {
         options={{
           title: 'Dashboard',
           tabBarIcon: ({ color }) => <Icons.Ionicons name="grid" size={28} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="MyProfile"
+        options={{
+          title: 'Profile',
+          tabBarIcon: ({ color }) => <Icons.Ionicons name="person" size={28} color={color} />,
         }}
       />
     </Tabs>

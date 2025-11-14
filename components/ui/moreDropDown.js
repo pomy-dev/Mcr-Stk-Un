@@ -1,24 +1,24 @@
 // src/components/MoreDropdown.js
-import React, { useRef, useState } from 'react';
+import { useAppContext } from '@/app/_layout';
+import { useRef, useState } from 'react';
 import {
+  Animated,
+  Dimensions,
+  Modal,
+  Pressable,
+  StyleSheet,
+  Text,
   TouchableOpacity,
   View,
-  Text,
-  Modal,
-  StyleSheet,
-  Animated,
-  Pressable,
-  Dimensions,
 } from 'react-native';
 import { Icons } from '../../constants/Icons';
-import { AppContext } from '../../context/appContext';
 
 const { width } = Dimensions.get('window');
 const ITEM_HEIGHT = 48;
 const MENU_WIDTH = 210;
 
 export const MoreDropdown = ({ items }) => {
-  const { theme } = React.useContext(AppContext);
+  const { theme } = useAppContext();
   const [visible, setVisible] = useState(false);
   const scaleAnim = useRef(new Animated.Value(0)).current;
 
@@ -43,7 +43,7 @@ export const MoreDropdown = ({ items }) => {
     <>
       {/* Anchor: three-dot icon */}
       <TouchableOpacity onPress={open} activeOpacity={0.7}>
-        <Icons.Entypo name="dots-three-vertical" size={24} color={theme.colors.text} />
+        <Icons.Entypo name="dots-three-vertical" size={24} color={theme?.colors.text} />
       </TouchableOpacity>
 
       {/* Modal with dropdown */}
@@ -53,8 +53,8 @@ export const MoreDropdown = ({ items }) => {
             style={[
               styles.menu,
               {
-                backgroundColor: theme.colors.card || '#fff',
-                borderColor: theme.colors.border || '#e0e0e0',
+                backgroundColor: theme?.colors.card || '#fff',
+                borderColor: theme?.colors.border || '#e0e0e0',
                 transform: [{ scale: scaleAnim }],
                 opacity: scaleAnim,
               },
@@ -75,7 +75,7 @@ export const MoreDropdown = ({ items }) => {
                     }}
                   >
                     <Icon name={item.iconName} size={22} color="#666" />
-                    <Text style={[styles.itemText, { color: theme.colors.text }]}>
+                    <Text style={[styles.itemText, { color: theme?.colors.text }]}>
                       {item.title}
                     </Text>
                   </TouchableOpacity>
@@ -85,7 +85,7 @@ export const MoreDropdown = ({ items }) => {
                     <View
                       style={{
                         height: StyleSheet.hairlineWidth,
-                        backgroundColor: theme.colors.border || '#e0e0e0',
+                        backgroundColor: theme?.colors.border || '#e0e0e0',
                         marginLeft: 44, // align with icon + text padding
                       }}
                     />
