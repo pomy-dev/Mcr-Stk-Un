@@ -119,8 +119,8 @@ export const unstable_settings = { anchor: '(tabs)' };
 
 export default function RootLayout() {
   return (
-    <AuthProvider>
-      <AppProvider>
+    <AuthProvider children={undefined}>
+      <AppProvider children={undefined}>
         <AppInner />
       </AppProvider>
     </AuthProvider>
@@ -133,8 +133,9 @@ function AppInner() {
   const navigationRef = useNavigationContainerRef();
 
   return (
-    <PaperProvider theme={theme}>
+    <PaperProvider theme={theme} children={undefined}>
       <Stack ref={navigationRef}>
+        <Stack.Screen name="Login" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="(stokfela)" options={{ headerShown: false }} />
       </Stack>

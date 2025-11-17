@@ -8,8 +8,8 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Button } from '../../components/ui/Button';
-import { AuthContext } from '../../context/authProvider';
+import { Button } from '../components/ui/Button';
+import { AuthContext } from '../context/authProvider';
 
 export default function SignupScreen({ navigation }) {
   const [fullName, setFullName] = useState('');

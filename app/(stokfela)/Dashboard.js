@@ -360,12 +360,6 @@ export default function GroupDetailsScreen() {
               onPress: () => console.log('Admin Outline'),
             },
             {
-              title: 'Add Member',
-              icon: 'AntDesign',
-              iconName: 'user-add',
-              onPress: () => console.log('Add user')
-            },
-            {
               title: 'Transactions',
               icon: 'FontAwesome',
               iconName: 'list-alt',
@@ -394,7 +388,7 @@ export default function GroupDetailsScreen() {
         {[
           { key: 'overview', label: 'Overview' },
           { key: 'members', label: 'Members' },
-          { key: 'transactions', label: 'Transactions' },
+          { key: 'transactions', label: 'My Track' },
         ].map((tab) => (
           <TouchableOpacity
             key={tab.key}
