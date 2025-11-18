@@ -13,14 +13,14 @@ import {
 } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 import { Icons } from '../../constants/Icons';
+import { AppContext } from '../../context/appContext';
 import { AuthContext } from '../../context/authProvider';
-import { useAppContext } from '../_layout';
 
 export default function LoanRequestScreen() {
-  const { theme, isDarkMode } = useAppContext();
+  const { theme, isDarkMode } = React.useContext(AppContext);
   // Detect mode
   const { mode, loanId } = useLocalSearchParams();
-  const { user } = React.useContext(AuthContext);
+  const { user, logout } = React.useContext(AuthContext);
 
   // === REQUEST MODE STATES ===
   const [loanAmount, setLoanAmount] = useState('');

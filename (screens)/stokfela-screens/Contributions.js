@@ -18,11 +18,11 @@ import {
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Portal } from 'react-native-paper';
+import { AppContext } from '../../context/appContext';
 import { MoreDropdown } from '../../components/ui/moreDropDown';
 import { Icons } from '../../constants/Icons';
 import { Images } from '../../constants/Images';
 import { AuthContext } from '../../context/authProvider';
-import { useAppContext } from '../_layout';
 
 const MOCK_TRANSACTIONS = [
   { id: '1', date: '2025-10-28', amount: 'E500.00', status: 'Success', reference: 'XMAS2024-001' },
@@ -39,7 +39,7 @@ const PAYMENT_METHODS = [
 ];
 
 export default function MakeContributionScreen() {
-  const { theme, isDarkMode } = useAppContext();
+  const { theme, isDarkMode } = useContext(AppContext);
   const { user, logout } = React.useContext(AuthContext);
 
   const [contributionAmount, setContributionAmount] = useState('');

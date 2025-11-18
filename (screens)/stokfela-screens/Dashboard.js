@@ -6,8 +6,8 @@ import { Avatar } from 'react-native-paper';
 import { MoreDropdown } from '../../components/ui/moreDropDown';
 import { Icons } from '../../constants/Icons';
 import { Images } from '../../constants/Images';
+import { AppContext } from '../../context/appContext';
 import { AuthContext } from '../../context/authProvider';
-import { useAppContext } from '../_layout';
 
 // Mock data for group details
 const mockGroupDetails = {
@@ -83,7 +83,7 @@ const mockGroupDetails = {
 };
 
 export default function GroupDetailsScreen() {
-  const { theme, isDarkMode } = useAppContext();
+  const { theme, isDarkMode } = React.useContext(AppContext);
   const { user } = React.useContext(AuthContext)
   const [activeTab, setActiveTab] = useState('overview');
 

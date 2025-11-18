@@ -1,21 +1,20 @@
-import React, { useState, useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import {
-  StyleSheet,
-  StatusBar,
-  ScrollView,
-  View,
-  Text,
-  TouchableOpacity,
   Alert,
-  TextInput,
-  Modal,
-  Pressable,
   Image,
+  Modal,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from 'react-native';
 import { Icons } from '../../constants/Icons';
+import { Images } from '../../constants/Images';
 import { AppContext } from '../../context/appContext';
 import { AuthContext } from '../../context/authProvider';
-import { Images } from '../../constants/Images';
 
 const PAYMENT_METHODS = [
   {

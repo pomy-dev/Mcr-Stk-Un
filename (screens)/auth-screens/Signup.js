@@ -8,8 +8,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Button } from '../components/ui/Button';
-import { AuthContext } from '../context/authProvider';
+import { Button } from '../../components/ui/Button';
+import { Icons } from '../../constants/Icons';
+import { AuthContext } from '../../context/authProvider';
 
 export default function SignupScreen({ navigation }) {
   const [fullName, setFullName] = useState('');
@@ -49,13 +50,15 @@ export default function SignupScreen({ navigation }) {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      <TouchableOpacity onPress={() => navigation.gBack()}>
-        <Text style={styles.backButton}>← Back</Text>
-      </TouchableOpacity>
+
 
       <View style={styles.header}>
-        <Text style={styles.title}>Create Account</Text>
-        <Text style={styles.subtitle}>Join a group and start saving</Text>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={{}}>
+          <Icons.Feather name='chevron-left' size={24} color='#2563eb' />
+        </TouchableOpacity>
+        <View>
+          <Text style={styles.title}>Create Account</Text>
+        </View>
       </View>
 
       <View style={styles.formContainer}>
@@ -138,13 +141,15 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   header: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 32,
   },
   title: {
     fontSize: 28,
     fontWeight: '700',
     color: '#1e293b',
-    marginBottom: 8,
+    marginLeft: 8,
   },
   subtitle: {
     fontSize: 14,

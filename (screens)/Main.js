@@ -8,9 +8,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { StatCard } from '../../components/ui/StatCard';
-import { TransactionItem } from '../../components/ui/TransactionItem';
-import { mockGroups, mockMemberAccounts, mockTransactions } from '../../utils/mockData';
+import { StatCard } from '../components/ui/StatCard';
+import { TransactionItem } from '../components/ui/TransactionItem';
+import { mockGroups, mockMemberAccounts, mockTransactions } from '../utils/mockData';
 
 export default function DashboardScreen({ navigation }) {
   const [selectedGroup, setSelectedGroup] = useState('1');

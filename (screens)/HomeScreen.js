@@ -17,8 +17,8 @@ import {
 } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import Carousel from "react-native-reanimated-carousel";
-import { Icons } from '../../constants/Icons';
-import { Images } from '../../constants/Images';
+import { Icons } from '../constants/Icons';
+import { Images } from '../constants/Images';
 
 const { width: WINDOW_WIDTH } = Dimensions.get("window");
 

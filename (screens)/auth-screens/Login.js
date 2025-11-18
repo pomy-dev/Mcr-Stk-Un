@@ -1,6 +1,3 @@
-// app/(auth)/login.tsx
-
-import { router } from "expo-router";
 import { useContext, useState } from "react";
 import {
   ActivityIndicator,
@@ -13,10 +10,10 @@ import {
   View,
 } from "react-native";
 import PhoneInput from "react-native-international-phone-number";
-import { Button } from "../components/ui/Button";
-import { AuthContext } from "../context/authProvider";
+import { Button } from "../../components/ui/Button";
+import { AuthContext } from "../../context/authProvider";
 
-export default function LoginScreen() {
+export default function LoginScreen({ navigation }) {
   const [phoneInputValue, setPhoneInputValue] = useState("");
   const [e164Number, setE164Number] = useState("");
   const [otp, setOtp] = useState("");
@@ -57,8 +54,8 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       // YOUR REAL VERIFY ENDPOINT HERE
-      await signIn?.({ phone: e164Number });
-      router.replace("/Groups");
+      // await signIn?.({ phone: e164Number });
+      navigation.navigate("MainTabs");
     } catch (e) {
       Alert.alert("Login Failed", e.message ?? "Something went wrong");
     } finally {
@@ -67,12 +64,12 @@ export default function LoginScreen() {
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false} contentContainerStyle={styles.contentContainer}>
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerIcon}>💼</Text>
-        <Text style={styles.title}>InHlumo</Text>
-        <Text style={styles.subtitle}>Easy+Transparent Savings & Lending</Text>
+        <Text style={styles.title}>InHlumo Schemes</Text>
+        <Text style={styles.subtitle}>Secure+Easy+Transparent Schemes</Text>
       </View>
 
       {/* Phone Input */}
@@ -83,8 +80,8 @@ export default function LoginScreen() {
           value={phoneInputValue}
           defaultCountry="SZ"           // Eswatini/Swaziland 🇸🇿 (+268)
           onChangePhoneNumber={(data) => {
-            setPhoneInputValue(data.phoneNumber || "");
-            setE164Number(data.e164 || "");
+            setPhoneInputValue(data || "");
+            setE164Number(data || "");
           }}
           placeholder="76 123 456"
           phoneInputStyle={styles.phoneInput}
@@ -139,7 +136,7 @@ export default function LoginScreen() {
       </View>
 
       {/* Sign Up Link */}
-      <TouchableOpacity onPress={() => router.push("/Signup")} style={styles.signupLink}>
+      <TouchableOpacity onPress={() => navigation.navigate("Signup")} style={styles.signupLink}>
         <Text style={styles.signupText}>
           Don’t have an account? <Text style={styles.signupBold}>Create one</Text>
         </Text>
@@ -165,7 +162,7 @@ const styles = StyleSheet.create({
   title: { fontSize: 28, fontWeight: "700", color: "#1e293b", marginBottom: 8 },
   subtitle: { fontSize: 14, color: "#64748b" },
 
-  formContainer: { marginBottom: 24 },
+  formContainer: { marginBottom: 18 },
   label: { fontSize: 14, fontWeight: "600", color: "#1e293b", marginBottom: 8 },
 
   phoneInput: {
@@ -204,7 +201,7 @@ const styles = StyleSheet.create({
 
   actionButton: { marginTop: 24 },
 
-  divider: { flexDirection: "row", alignItems: "center", marginVertical: 24 },
+  divider: { flexDirection: "row", alignItems: "center", marginVertical: 18 },
   line: { flex: 1, height: 1, backgroundColor: "#e2e8f0" },
   dividerText: { marginHorizontal: 12, color: "#94a3b8", fontSize: 13 },
 
@@ -214,6 +211,7 @@ const styles = StyleSheet.create({
 
   demoContainer: {
     marginTop: 32,
+    marginBottom: 30,
     backgroundColor: "#e0f2fe",
     borderRadius: 8,
     padding: 16,

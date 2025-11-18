@@ -9,8 +9,8 @@ import {
 } from 'react-native';
 import { Icons } from '../../constants/Icons';
 import { Images } from '../../constants/Images';
+import { AppContext } from '../../context/appContext';
 import { AuthContext } from '../../context/authProvider';
-import { useAppContext } from '../_layout';
 
 // Mock data for transactions
 const mockTransactions = [
@@ -74,7 +74,7 @@ const mockUser = {
 };
 
 export default function TransactionsScreen() {
-  const { theme, isDarkMode } = useAppContext();
+  const { theme, isDarkMode } = React.useContext(AppContext);
   const { user, logout } = React.useContext(AuthContext);
   const [selectedFilter, setSelectedFilter] = useState('all');
 

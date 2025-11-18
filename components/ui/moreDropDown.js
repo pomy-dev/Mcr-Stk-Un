@@ -1,6 +1,5 @@
 // src/components/MoreDropdown.js
-import { useAppContext } from '@/app/_layout';
-import { useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   Animated,
   Dimensions,
@@ -12,13 +11,14 @@ import {
   View,
 } from 'react-native';
 import { Icons } from '../../constants/Icons';
+import { AppContext } from '../../context/appContext';
 
 const { width } = Dimensions.get('window');
 const ITEM_HEIGHT = 48;
 const MENU_WIDTH = 210;
 
 export const MoreDropdown = ({ items }) => {
-  const { theme } = useAppContext();
+  const { theme } = React.useContext(AppContext);
   const [visible, setVisible] = useState(false);
   const scaleAnim = useRef(new Animated.Value(0)).current;
 

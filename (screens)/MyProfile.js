@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Alert, Image, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { Icons } from '../../constants/Icons';
-import { Images } from '../../constants/Images';
-import { AuthContext } from '../../context/authProvider';
-import { useAppContext } from '../_layout';
+import { AppContext } from '../context/appContext';
+import { Icons } from '../constants/Icons';
+import { Images } from '../constants/Images';
+import { AuthContext } from '../context/authProvider';
 
 // Mock user data
 const mockUser = {
@@ -21,7 +21,7 @@ const mockUser = {
 };
 
 export default function MemberProfile() {
-  const { theme, isDarkMode } = useAppContext();
+  const { theme, isDarkMode } = React.useContext(AppContext);
   const { user, logout } = React.useContext(AuthContext);
   const [isEditing, setIsEditing] = useState(false);
   const [userData, setUserData] = useState(mockUser);
